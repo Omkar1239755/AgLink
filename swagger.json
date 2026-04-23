@@ -1,0 +1,100 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "My Express API",
+    "description": "A sample API built with Express",
+    "version": "1.0.0"
+  },
+  "servers": [
+
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "security": [],
+
+  "paths": {
+
+  
+"/register-user": {
+  "post": {
+    "summary": "Register a new user",
+    "tags": ["AUTH"],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["first_name", "last_name", "email", "password"],
+
+            "properties": {
+              "first_name": {
+                "type": "string",
+                "example": "Omkar"
+              },
+              "last_name": {
+                "type": "string",
+                "example": "Patil"
+              },
+              "email": {
+                "type": "string",
+                "example": "omkar@example.com"
+              },
+              "password": {
+                "type": "string",
+                "example": "123456"
+              }
+            }
+          }
+        }
+      }
+    },
+    
+    "responses": {
+      "201": {
+        "description": "User registered successfully"
+      },
+      "400": {
+        "description": "Validation error or email already exists"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  },
+ 
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "static-key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
