@@ -52,6 +52,14 @@ User.associate = (models) => {
       foreignKey: "user_id",
       as: "devices",
     });
-};
+}; 
+
+User.associate = (models)=>{
+    User.hasOne(models.SellerShop,{
+        foreignKey: "user_id",
+        as: "shop",
+    })
+}
+
 
 export default User;

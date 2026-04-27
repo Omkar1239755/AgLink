@@ -13,6 +13,9 @@ app.use(express.json());
 const swagger = JSON.parse(
     fs.readFileSync(new URL("./swagger.json", import.meta.url))
   );
+
+app.use("/assets", express.static("assets"));
+
   
   app.use(
     "/api-docs",
@@ -25,6 +28,10 @@ const swagger = JSON.parse(
 import router from './src/api/user/index.js'
 app.use(router);
 
+
+// admin route
+import adminrouter from './src/api/admin/index.js'
+app.use('/admin', adminrouter);
 
 app.listen(3000,()=>{
 

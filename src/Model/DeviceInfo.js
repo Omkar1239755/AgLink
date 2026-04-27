@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
-
-import sequelize from "../config/db.js";
+import sequelize from "../../config/db.js";  
 
 const DeviceInfo = sequelize.define(
   "DeviceInfo",

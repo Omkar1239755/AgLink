@@ -2,6 +2,7 @@ import Joi from  'joi';
 import bcrypt from "bcrypt"; 
 import jwt from "jsonwebtoken";
 import User from '../../Model/User.js';
+import SellerShop from '../../Model/SellerShop.js';
 import { sendEmail } from '../../utils/email.js';
 
 // register
@@ -318,6 +319,58 @@ export const resetPassword = async (req, res) => {
       });
     }
   };
+
+
+
+export const addSeller  = async(req,res)=>{
+
+
+    const schema = Joi.object({
+            'user_id':Joi.required(),
+            'shop_image':Joi.required(),
+            'shop_name':Joi.required(),
+            'shopkeaper_name':Joi.required(),
+            'email':Joi.required(),
+            'phone_number':Joi.required(),
+            'shop_address':Joi.required(),
+    })
+
+        const {error,value} = schema.validate(req.body);
+
+
+    if (error) {
+        return res.status(400).json({
+            status: false,
+            message: error.details[0].message
+            });
+        }
+
+    const{user_id,shop_address,shop_image,shop_name,shopkeaper_name,email,phone_number} = value;
+
+    const user = await User.findOne({
+
+        where:{id:user_id}
+    })
+
+    user.role = 2;
+    await user.save();
+
+    const data =  await SellerShop.create({
+        user_id,
+        shop_name,
+        shop_address,
+        shopkeaper_name,
+        email,
+        phone_number,
+        shop_address
+    })
+
+
+
+
+
+
+ } 
 
 
 
