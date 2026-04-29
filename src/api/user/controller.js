@@ -3,14 +3,18 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from '../../Model/User.js';
 import SellerShop from '../../Model/SellerShop.js';
+import FoodCategory from '../../Model/FoodCategory.js'
+import  FoodSubCategory from  '../../Model/FoodSubCategory.js'
+import  FoodSubSubCategory from  '../../Model/FoodSubSubCategory.js'
+import ShopProduct from '../../Model/ShopProduct.js';
 import { sendEmail } from '../../utils/email.js';
+
 
 // register
 export const RegisterUser = async (req,res)=>{
 
 try{
-    
-    
+     
 const schema = Joi.object({
         first_name : Joi.string().required(),
         last_name:  Joi.string().required(),
@@ -320,57 +324,241 @@ export const resetPassword = async (req, res) => {
     }
   };
 
-
-
+// add seller and shop
 export const addSeller  = async(req,res)=>{
 
+    try {
 
-    const schema = Joi.object({
-            'user_id':Joi.required(),
-            'shop_image':Joi.required(),
-            'shop_name':Joi.required(),
-            'shopkeaper_name':Joi.required(),
-            'email':Joi.required(),
-            'phone_number':Joi.required(),
-            'shop_address':Joi.required(),
-    })
+        const schema = Joi.object({
+                'shop_name':Joi.required(),
+                'shopkeaper_name':Joi.required(),
+                'email':Joi.required(),
+                'phone_number':Joi.required(),
+                'shop_address':Joi.required(),
+        })
 
         const {error,value} = schema.validate(req.body);
 
+        if (error) {
+            return res.status(400).json({
+                status: false,
+                message: error.details[0].message
+                });
+            }
 
-    if (error) {
-        return res.status(400).json({
+        const{shop_address,shop_name,shopkeaper_name,email,phone_number} = value;
+
+        const user = await User.findOne({
+                        where:{id:req.user.id}
+                    })
+        user.role = 2;
+        await user.save();
+        
+        // const image =   req.file?`${req.file.destination}/${req.file.filename}`: null;
+
+        const image =req.file.path
+
+        if (!image) {
+            return res.status(400).json({
             status: false,
-            message: error.details[0].message
+            message: "Shop Image is required"
             });
         }
 
-    const{user_id,shop_address,shop_image,shop_name,shopkeaper_name,email,phone_number} = value;
+        const data = await SellerShop.create({
+                        user_id:req.user.id,
+                        shop_name,
+                        shop_address,
+                        shopkeaper_name,    
+                        email,
+                        phone_number,
+                        shop_address,
+                        shop_image:image
+                    })
 
-    const user = await User.findOne({
-
-        where:{id:user_id}
-    })
-
-    user.role = 2;
-    await user.save();
-
-    const data =  await SellerShop.create({
-        user_id,
-        shop_name,
-        shop_address,
-        shopkeaper_name,
-        email,
-        phone_number,
-        shop_address
-    })
+        return res.status(201).json({
+            status: true,
+            message: "Seller shop created successfully",
+            data: data
+        });
+    
+    } 
+    catch (err) {
+    return res.status(500).json({
+        status: false,
+        message: "Something went wrong",
+        error: err.message
+    });
+}
 
 
+} 
+//home 
+export const sellerHome = async(req,res)=>{
+
+
+const userdata = req.user;
+
+// FETCHING CATEGORY
+const fruitcategory = FoodCategory
+
+
+}
+// get categorie
+export const getCategorie = async(req,res)=>{
+
+try {
+
+    const data  = await FoodCategory.findAll({          
+                attributes:['id','food_category']
+        });
+
+        return res.json({
+            status: true,
+            data: data
+        });
+        
+} catch (error) {
+        return res.status(500).json({
+            status: false,
+            message: error.message
+        }); 
+    }
+
+}
+//get subcatogrie
+  export const subCategorie = async(req,res)=>{
+
+  try {
+        
+        const {catogrie_id} = req.query
+
+        // object me aegae isliye object bnao aur key ka name lekho 
+        console.log(catogrie_id);
+
+        if(!catogrie_id){
+            return res.status(400).json({
+            message:"Category id is required"
+            })
+
+        }
+        const data = await FoodSubCategory.findAll({
+
+            where:{food_category_id:catogrie_id},
+            attributes:['id','name']
+        });
+
+        return res.json({
+            status:true,
+            data:data
+        })
+
+        } catch (error) { 
+            return res.status(500).json({
+                status: false,
+                message: error.message
+                }); 
+
+            }
+}
+// get type 
+  export const getType = async(req,res)=>{
+
+    try {
+        console.log("omkar");
+        //req .query ka data objext me aat hai  
+        const {sub_category_id} = req.query;
+        
+
+        if(!sub_category_id){
+            return res.status(400).json({
+            message:"sub_category_id is required"
+            })
+        }
+
+        const data = FoodSubSubCategory.findAll(
+        {
+            where:{
+            'food_sub_category_id':sub_category_id,
+            attributes:['id','name']
+           }
+        })
+
+        return res.json({
+            status:true,
+            data:data
+        })   
+    } catch (error) {
+        
+    }
 
 
 
 
- } 
+
+}
+// create aproducts
+export const createProduct = async(req,res)=>{
+
+try {   
+    const schema = Joi.object({
+            'category_id':Joi.required(),
+            'sub_category_id':Joi.required(),
+            'variety_id':Joi.required(),
+            'amount':Joi.required()
+        })
+
+        const{error,value} = schema.validate(req.body);
+
+
+        if (error) {
+            return res.status(400).json({
+                status: false,
+                message: error.details[0].message
+                });
+            }
+        const{category_id,sub_category_id,variety_id,amount} = value;
+        
+
+        const user_id = req.user.id;
+
+        const shop = await SellerShop.findOne({
+                            where:{
+                            'user_id':user_id   
+                            },
+                            attributes:['id']
+                        })
+        const shopId = shop.id
+
+        const data = await ShopProduct.create({
+            shop_id: shopId,
+            user_id: user_id,
+            category_id,
+            sub_category_id,
+            variety_id,
+            amount
+            });
+    
+        return res.status(201).json({
+            status: true,
+            message: "Data created successfully",
+            data: data
+        });
+        } catch (error) {
+            return res.status(500).json({
+                status: false,
+                message: "Something went wrong",
+                error: error.message
+            });   
+     } 
+
+ }
+
+
+
+
+
+
 
 
 

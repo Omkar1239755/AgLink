@@ -44,7 +44,7 @@ allowNull:true
 }
 
 },{
-  tableName: "food_categories",
+  tableName: "seller_shops",
   timestamps: true
 });
 

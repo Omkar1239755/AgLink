@@ -35,6 +35,13 @@ id: {
     type: DataTypes.STRING,
     allowNull: false,
     }, 
+
+role:{
+type:DataTypes.TINYINT,
+
+}
+
+
 },
 {   
     tableName: "users",   // must match migration

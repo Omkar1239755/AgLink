@@ -32,4 +32,14 @@ const FoodCategory = sequelize.define("FoodCategory", {
   timestamps: true
 });
 
+FoodCategory.associate = (models) => {
+
+  FoodCategory.hasMany(models.FoodSubCategory, {
+    foreignKey: 'food_category_id',
+    as: 'subcategories'
+  });
+  
+};
+
+
 export default FoodCategory;

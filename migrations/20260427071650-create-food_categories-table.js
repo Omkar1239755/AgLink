@@ -35,6 +35,10 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.DATE,
       allowNull: false
     }
+
+
+
+    
   
   });
 
