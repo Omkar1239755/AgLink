@@ -1,43 +1,38 @@
-export default (sequelize, DataTypes) => {
-    const FoodSubSubCategory = sequelize.define(
-      'FoodSubSubCategory',
-      {
-        id: {
-          type: DataTypes.INTEGER,
-          primaryKey: true,
-          autoIncrement: true
-        },
-  
-        food_sub_category_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false
-        },
-  
-        name: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
-  
-        image: {
-          type: DataTypes.STRING,
-          allowNull: true
-        }
-      },
-      {
-        tableName: 'food_sub_subcategories',
-        timestamps: true
-      }
-    );
-  
-    //Relation
-    FoodSubSubCategory.associate = (models) => {
+import { DataTypes } from "sequelize";
+import sequelize from "../../config/db.js";  
 
-        FoodSubSubCategory.belongsTo(models.FoodSubCategory, {
-            foreignKey: 'food_sub_category_id',
-            as: 'subcategory'
-        });
-      
-    };
-  
-    return FoodSubSubCategory;
-  };
+const FoodSubSubCategory = sequelize.define('FoodSubSubCategory', {
+    
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+
+    food_sub_category_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+
+    image: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
+
+}, {
+    tableName: 'food-sub-subcategories',
+    timestamps: true
+});
+
+// 🔗 relation (same as tumne likha tha)
+FoodSubSubCategory.belongsTo(sequelize.models.FoodSubCategory, {
+    foreignKey: 'food_sub_category_id',
+    as: 'subcategory'
+});
+
+export default FoodSubSubCategory;

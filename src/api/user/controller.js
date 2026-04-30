@@ -8,6 +8,8 @@ import  FoodSubCategory from  '../../Model/FoodSubCategory.js'
 import  FoodSubSubCategory from  '../../Model/FoodSubSubCategory.js'
 import ShopProduct from '../../Model/ShopProduct.js';
 import { sendEmail } from '../../utils/email.js';
+import { Op, where } from 'sequelize';
+import { response } from 'express';
 
 
 // register
@@ -476,13 +478,14 @@ try {
             })
         }
 
-        const data = FoodSubSubCategory.findAll(
-        {
-            where:{
-            'food_sub_category_id':sub_category_id,
-            attributes:['id','name']
-           }
-        })
+        const data = await FoodSubSubCategory.findAll(
+                    {
+                        where:{
+                        'food_sub_category_id':sub_category_id,
+                    },
+                    attributes:['id','name']
+
+                })
 
         return res.json({
             status:true,
@@ -554,6 +557,109 @@ try {
 
  }
 
+//home
+export const Home = async (req, res) => {
+    try {
+        const categorie = await FoodCategory.findAll({
+            attributes: ['food_category', 'image']
+        });
+
+        const category_id = req.body.category_id;
+        const sub_category_id = req.body.sub_category_id;
+        const user_id = req.user.id;
+
+        let subcategorieData = [];
+        let variety_data = [];
+
+        // 🔹 SubCategory
+        if (category_id) {
+            const sellerDataId = await ShopProduct.findAll({
+                where: {
+                    user_id: user_id,
+                    category_id: category_id
+                },
+                attributes: ['sub_category_id']
+            });
+
+            const subCategorieId = sellerDataId.map(item => item.sub_category_id);
+
+            if (subCategorieId.length > 0) {
+                subcategorieData = await FoodSubCategory.findAll({
+                    where: {
+                        id: {
+                            [Op.in]: subCategorieId
+                        }
+                    }
+                });
+            }
+        }
+
+        // Variety
+        if (sub_category_id) {
+            const variety_ids = await ShopProduct.findAll({
+                where: {
+                    user_id: user_id,
+                    sub_category_id: sub_category_id
+                },
+                attributes: ['variety_id']
+            });
+
+            const data_ids = variety_ids.map(item => item.variety_id);
+
+            if (data_ids.length > 0) {
+
+                variety_data = await FoodSubSubCategory.findAll({
+                            where: {
+                                id: {
+                                    [Op.in]: data_ids
+                                }
+                            }
+                });
+
+            }
+        }
+        
+
+        return res.json({
+            categorie,
+            subcategorieData,
+            variety_data,
+            user
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+// add stoock
+export const addStock = async(req,res)=>{
+    try { 
+        const user_id = req.user.id;
+        const variety_id = req.body.variety_id;
+
+        const data = await ShopProduct.findOne({
+                        where:{
+                            user_id   ,
+                            variety_id
+                        }
+                    } )
+
+        data.quantity = req.body.quantity;
+        await data.save();
+
+        return res.json({
+        message:"STock added succesfully",
+        data:data
+
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
+}
 
 
 
