@@ -1,7 +1,8 @@
 import express from 'express';
 import { RegisterUser,Login,ForgetPassword,VerifyOtp, 
         resetPassword,addSeller,getCategorie,
-        subCategorie,getType,createProduct,Home ,addStock} from './controller.js';
+        subCategorie,getType,createProduct,Home ,addStock,getShop} 
+from './controller.js';
 
 import createmulter from '../../utils/multer.js';
 import authMiddleware from '../../utils/authmiddleware.js';
@@ -28,6 +29,8 @@ router.post('/home',authMiddleware,Home);
 
 router.post('/add-stock',authMiddleware,addStock);
 
+// costomer flor
+router.get('/get-shop',authMiddleware,getShop);
 
 
 export default router;

@@ -56,4 +56,18 @@ SellerShop.associate = (models) => {
     });
 };
 
+
+SellerShop.associate = (models)=>{
+  SellerShop.hasMany(models.ShopProduct,{
+      foreignKey: "shop_id",
+      as: "shopData"
+
+  })
+}
+
+
+
+
+
+
 export default SellerShop;

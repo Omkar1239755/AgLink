@@ -51,4 +51,13 @@ const ShopProduct = sequelize.define('ShopProduct', {
   timestamps: true
 });
 
+
+ShopProduct.associate = (models)=>{
+  ShopProduct.belongsTo(models.SellerShop,{
+      foreignKey: "shop_id",
+      as: "shopData"
+  })
+}
+
+
 export default ShopProduct;

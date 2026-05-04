@@ -8,8 +8,7 @@ import  FoodSubCategory from  '../../Model/FoodSubCategory.js'
 import  FoodSubSubCategory from  '../../Model/FoodSubSubCategory.js'
 import ShopProduct from '../../Model/ShopProduct.js';
 import { sendEmail } from '../../utils/email.js';
-import { Op, where } from 'sequelize';
-import { response } from 'express';
+import { Op } from 'sequelize';
 
 
 // register
@@ -74,6 +73,7 @@ data:user
 
 
 };
+
 // login
 export const Login = async (req, res) => {
     try {
@@ -141,6 +141,7 @@ export const Login = async (req, res) => {
         });
     }
 };
+
 // forgetpassword
 export const ForgetPassword = async(req,res)=>{
 
@@ -195,6 +196,7 @@ export const ForgetPassword = async(req,res)=>{
 
 
 };
+
 //verify otp
 export const VerifyOtp = async(req,res)=>{
 try {
@@ -260,6 +262,7 @@ try {
 
 
 }
+
 // reset password
 export const resetPassword = async (req, res) => {
     try {
@@ -324,7 +327,7 @@ export const resetPassword = async (req, res) => {
         message: "Server error"
       });
     }
-  };
+};
 
 // add seller and shop
 export const addSeller  = async(req,res)=>{
@@ -406,6 +409,7 @@ const fruitcategory = FoodCategory
 
 
 }
+
 // get categorie
 export const getCategorie = async(req,res)=>{
 
@@ -428,15 +432,13 @@ try {
     }
 
 }
+
 //get subcatogrie
   export const subCategorie = async(req,res)=>{
 
-  try {
+try {
         
         const {catogrie_id} = req.query
-
-        // object me aegae isliye object bnao aur key ka name lekho 
-        console.log(catogrie_id);
 
         if(!catogrie_id){
             return res.status(400).json({
@@ -447,7 +449,8 @@ try {
         const data = await FoodSubCategory.findAll({
 
             where:{food_category_id:catogrie_id},
-            attributes:['id','name']
+            attributes:['id','name','image']
+
         });
 
         return res.json({
@@ -462,16 +465,16 @@ try {
                 }); 
 
             }
-}
+  }
+
 // get type 
   export const getType = async(req,res)=>{
 
-    try {
-        console.log("omkar");
+try {
+      
         //req .query ka data objext me aat hai  
         const {sub_category_id} = req.query;
-        
-
+    
         if(!sub_category_id){
             return res.status(400).json({
             message:"sub_category_id is required"
@@ -483,24 +486,21 @@ try {
                         where:{
                         'food_sub_category_id':sub_category_id,
                     },
-                    attributes:['id','name']
+                    attributes:['id','name','image']
 
                 })
 
-        return res.json({
-            status:true,
-            data:data
-        })   
-    } catch (error) {
-        
+            return res.json({
+                status:true,
+                data:data
+            })   
+        } catch (error) {
+         
     }
-
-
-
-
-
 }
-// create aproducts
+
+
+// create a products
 export const createProduct = async(req,res)=>{
 
 try {   
@@ -555,7 +555,7 @@ try {
             });   
      } 
 
- }
+}
 
 //home
 export const Home = async (req, res) => {
@@ -619,7 +619,6 @@ export const Home = async (req, res) => {
             }
         }
         
-
         return res.json({
             categorie,
             subcategorieData,
@@ -632,6 +631,8 @@ export const Home = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong" });
     }
 };
+
+
 
 // add stoock
 export const addStock = async(req,res)=>{
@@ -660,6 +661,52 @@ export const addStock = async(req,res)=>{
         return res.status(500).json({ message: "Something went wrong" });
     }
 }
+
+
+// get shop
+export const getShop = async(req,res)=>{
+try {
+
+    // const schema = Joi.object({
+    //    'sub_category_id':Joi.required(),
+    // });
+
+    // const{error,value} = schema.validate(req.body);
+
+    // if (error) {
+    //     return res.status(400).json({
+    //       status: false,
+    //       message: error.details[0].message,
+    //     });
+    // }
+
+    // const {sub_category_id} = value
+     
+    const data  =   await ShopProduct.findAll({
+        where:{
+            'variety_id' : req.body.variety_id
+            },
+            
+            include: [
+                {
+                    model: SellerShop,
+                    as: "shopData"
+                }
+            ]
+        })
+
+        return res.json({
+            message:"Shop fetched succesfully",
+            data:data
+         }); 
+        
+       }
+        catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Something went wrong" });  
+        }
+ }
+
 
 
 

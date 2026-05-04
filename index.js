@@ -17,11 +17,11 @@ const swagger = JSON.parse(
 app.use("/assets", express.static("assets"));
 
   
-  app.use(
-    "/api-docs",
-    swaggerUi.serveFiles(swagger, {}),
-    swaggerUi.setup(swagger)
-  );
+app.use(
+  "/api-docs",
+  swaggerUi.serveFiles(swagger, {}),
+  swaggerUi.setup(swagger)
+);
   
 
 //user routes
